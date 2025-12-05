@@ -1,28 +1,34 @@
 import multer from 'multer';
 
-
-const storage=multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null,'uploads/') // Specify the destination folder
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'uploads/') // Specify the destination folder
     },
-    filename:(req,file,cb)=>{
-        cb(null,`${Date.now()}-${file.originalname}`) 
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`)
     }
 });
 
-//File FILTER
+// File FILTER
 
-const fileFilter=(req,file,cb)=>{
-    const allowedTypes= ["images/jpeg","image/png","image/jpg"];
-
-    if(allowedTypes.includes(file.minetype)){
-        cb(null, true)
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
     
-    }else{
-        cb(new Error("Only .jpeg, .jpg and .png files are allowed"),false)
+    // Fix: It's 'mimetype' not 'minetype'
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error("Only .jpeg, .jpg and .png files are allowed"), false);
     }
+};
 
-}
-const upload =multer({storage,fileFileter})
+// Fix: Typo - 'fileFilter' not 'fileFileter'
+const upload = multer({ 
+    storage, 
+    fileFilter, // Fixed the typo here
+    limits: {
+        fileSize: 5 * 1024 * 1024 // Optional: Limit file size to 5MB
+    }
+});
 
 export default upload;
